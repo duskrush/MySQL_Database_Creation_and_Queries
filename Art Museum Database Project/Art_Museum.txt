@@ -1,0 +1,122 @@
+CREATE TABLE ART_OBJECT(
+
+id_no               INT          NOT NULL,
+Artist              VARCHAR (45) NOT NULL,
+Year                INT          NOT NULL,
+Origin              VARCHAR (45) NOT NULL,
+Title               VARCHAR (45) NOT NULL,  
+Description         VARCHAR (45) NOT NULL,
+Type                VARCHAR (45) NOT NULL,
+Paint_Type          VARCHAR (45) ,
+Drawn_on            VARCHAR (45) ,
+Height              INT			 ,
+Weight              INT          ,
+Material            VARCHAR (45) ,
+Style               VARCHAR (45) NOT NULL,
+
+PRIMARY KEY(id_no)
+);
+
+CREATE TABLE CREATED_BY(
+
+art_id INT NOT NULL,
+artist_name VARCHAR(45) NOT NULL,
+FOREIGN KEY(art_id) REFERENCES ART_OBJECT(id_no)
+ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY(artist_name) REFERENCES ARTIST(Name)
+ON UPDATE CASCADE ON DELETE CASCADE,
+PRIMARY KEY(art_id, artist_name)
+);
+
+
+CREATE TABLE ARTIST(
+
+Name                VARCHAR (45) NOT NULL,
+Date_born           VARCHAR (45) ,
+Date_died           VARCHAR (45) ,
+Country_of_origin   VARCHAR (45) NOT NULL,
+Main_style          VARCHAR (45) NOT NULL,  
+Epoch               VARCHAR (45) NOT NULL,
+Description			VARCHAR (45) NOT NULL,
+
+PRIMARY KEY(Name)
+);
+
+CREATE TABLE BORROWED_FROM(
+art_id INT NOT NULL,
+b_id INT NOT NULL,
+FOREIGN KEY(art_id) REFERENCES ART_OBJECT(id_no)
+ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY(b_id) REFERENCES BORROWED(coll_id)
+ON UPDATE CASCADE ON DELETE CASCADE,
+PRIMARY KEY(art_id, b_id)
+
+);
+
+CREATE TABLE BORROWED(
+
+coll_id             INT          NOT NULL,
+Collection          VARCHAR (45) NOT NULL,
+Month_Borrowed      INT			 NOT NULL,
+Day_Borrowed      	INT			 NOT NULL,
+Month_returned      INT			 NOT NULL,
+Day_returned      	INT			 NOT NULL,
+
+
+PRIMARY KEY(coll_id)
+);
+
+CREATE TABLE PART_OF(
+art_id INT NOT NULL,
+p_id INT NOT NULL,
+FOREIGN KEY(art_id) REFERENCES ART_OBJECT(id_no)
+ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY(p_id) REFERENCES PERMANENT_COLLECTION(coll_id)
+ON UPDATE CASCADE ON DELETE CASCADE,
+PRIMARY KEY(art_id, p_id)
+
+);
+
+CREATE TABLE PERMANENT_COLLECTION(
+
+coll_id				 INT			 NOT NULL,
+Status				 VARCHAR(20)  NOT NULL,
+Month_acquired      INT			 NOT NULL,
+Day_acquired      	INT			 NOT NULL,
+Cost			 	INT			 NOT NULL,
+
+PRIMARY KEY(coll_id)
+);
+
+CREATE TABLE COLLECTIONS(
+
+Name            VARCHAR (45)    NOT NULL,
+Phone           VARCHAR (45)    NOT NULL,
+Description     VARCHAR (200)   NOT NULL,
+Type            VARCHAR (45)    NOT NULL,
+Address         VARCHAR (45)    NOT NULL,
+Contact_person  VARCHAR (45)    NOT NULL,
+
+PRIMARY KEY(Name)
+);
+
+
+
+
+CREATE TABLE EXHIBITIONS(
+e_id			 INT				 NOT NULL,
+Name			 VARCHAR (45)	 NOT NULL,
+Start_day		 INT				 NOT NULL,
+Start_month		 INT				 NOT NULL,
+End_day			 INT				 NOT NULL,
+End_month		 INT				 NOT NULL,
+
+PRIMARY KEY(e_id)
+);
+
+CREATE TABLE FEATURED_IN(
+
+art_id			 INT				 NOT NULL,
+exhibition_id	 INT				 NOT NULL,
+FOREIGN KEY(art_id) REFERENCES ART_OBJECT(id_no)
+);

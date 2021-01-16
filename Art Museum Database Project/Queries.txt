@@ -1,0 +1,184 @@
+//Other
+INSERT INTO ART_OBJECT(id_no, Artist, Year, Origin, Title, Description, Type)
+
+//Painting
+INSERT INTO ART_OBJECT(id_no, Artist, Year, Origin, Title, Description, Type, Paint_Type, Drawn_on, Style)
+VALUES (0001, 'Edvard Munch', 1893, 'Norway', 'The Scream', 'Very creepy painting','Painting', 'Oil', 'Cardboard', 'Expressionist');
+VALUES (0002, 'Smiles McMiles', 2004, 'Unknown', 'Rad', 'Awsometown', 'Painting', 'Oil', 'Canvas', 'Realist');
+
+      
+//Scultpure & Statue
+INSERT INTO ART_OBJECT(id_no, Artist, Year, Origin, Title, Description, Type, Height, Weight, Material, Style) 
+VALUES(0003, 'Stan Jensen', 1910, 'Unknown', 'Block', 'Bust of famous politician', 'Sculpture','1', 54, 'Marble', 'Unknown');
+VALUES(0004, 'Michelangelo', 1501,'Italy', 'David', 'Statue of biblical hero David', 'Statue', '5', 12478, 'Marble', 'Renaissance');
+
+
+//Artist
+INSERT INTO ARTIST VALUES ('Edvard Munch',  '1863', '1994', 'Norway', 'Expressionist', 'Expressionist', 'Disturbed man');
+INSERT INTO ARTIST VALUES ('Michelangelo',  '1475', '1564', 'Italy', 'Renaissance', 'Italian Renaissance', 'Renaissance artist');
+INSERT INTO ARTIST VALUES ('Smiles McMiles',  '1993', '', 'Unknown', 'Unknown', 'Unknown', 'Unknown');
+INSERT INTO ARTIST VALUES ('Stan Jensen',  '1986', '', '2011', 'Unknown', 'Unknown', 'Underground artist');
+
+
+//Created_by
+INSERT INTO CREATED_BY VALUES (0001,'Edvard Munch');
+INSERT INTO CREATED_BY VALUES (0002,'Smiles McMiles');
+INSERT INTO CREATED_BY VALUES (0004,'Michelangelo');
+INSERT INTO CREATED_BY VALUES (0003,'Stan Jensen');
+
+//Borrowed
+INSERT INTO BORROWED(coll_id, Collection, Month_Borrowed, Day_Borrowed, Month_returned, Day_returned)
+VALUES(0001, 'Norway Collection', 08, 05, 09, 01);
+
+
+
+//Borrowed_from
+INSERT INTO BORROWED_FROM VALUES (0001,0001);
+INSERT INTO BORROWED_FROM VALUES(0004,0002);
+
+//Part_of
+INSERT INTO PART_OF VALUES (0002, 0001);
+INSERT INTO PART_OF VALUES (0003, 0002);
+
+//Permanent_collection
+INSERT INTO PERMANENT_COLLECTION (coll_id, Status, Month_acquired, Day_acquired, Cost)
+VALUES (0001, 'On display', 05, 14, 15000);
+VALUES (0002, 'Private', 01, 03, 1000000);
+
+//collections
+INSERT INTO COLLECTIONS (Name, Phone, Description, Type, Address, Contact_person)
+VALUES ('Norway Collection', '9098675309', 'Norwegian art', 'Gallery', '24 East Warwick Lane, Yharnam', 'Vicar Amelia');  
+VALUES ('Renaissance Collecton', '6168771482', 'Reinassance art', 'Museum', '55 Hidden Cirlce, Byrgenwerth', 'William Arcy');
+
+//FEATURED_IN
+INSERT INTO FEATURED_IN VALUES (0001, 0001);
+INSERT INTO FEATURED_IN VALUES (0002, 0001);
+INSERT INTO FEATURED_IN VALUES (0003, 0002);
+INSERT INTO FEATURED_IN VALUES (0004, 0002);
+
+//Exhibitions
+INSERT INTO EXHIBITIONS (e_id, Name, Start_day, Start_month, End_day, End_month)
+VALUES (0001, 'Past and present', 11, 03, 05, 05);
+VALUES (0002, 'New Money', 14, 02, 27, 02);
+
+
+
+
+//Queries
+
+
+//Returns all paintings
+
+SELECT Title
+FROM ART_OBJECT
+WHERE Type = 'Painting';
+
+//Returns all paintings of artists with Expressionist epoch
+SELECT Title
+FROM ART_OBJECT
+JOIN CREATED_BY
+ON CREATED_BY.art_id = ART_OBJECT.id_no
+JOIN ARTIST
+ON CREATED_BY.artist_name = ARTIST.Name
+WHERE Type = 'Painting' AND ARTIST.Epoch = 'Expressionist';
+
+//Returns titles of all paintings by Smiles McMiles
+SELECT Title
+FROM ART_OBJECT
+WHERE ARTIST = 'Smiles McMiles';
+
+//Returns description, type, artist epoch, and artist of art objects in permanent collection
+SELECT Title, ART_OBJECT.Description, Type, Epoch, Artist
+FROM ART_OBJECT
+JOIN ARTIST
+ON ART_OBJECT.Artist = ARTIST.Name
+JOIN PART_OF
+ON PART_OF.art_id = ART_OBJECT.id_no;
+
+//Returns description, type, artist epoch, and artist of art objects in borrowed collection
+SELECT Title, ART_OBJECT.Description, Type, Epoch, Artist
+FROM ART_OBJECT
+JOIN ARTIST
+ON ART_OBJECT.Artist = ARTIST.Name
+JOIN BORROWED_FROM
+ON BORROWED_FROM.art_id = ART_OBJECT.id_no;
+
+//Returns exhibition names that take place this month (made in February)
+SELECT Name
+FROM EXHIBITIONS
+WHERE Start_month >= 2 AND End_month <= 2;
+
+//Returns everything from art objects in the Past and present exhibition
+SELECT * FROM ART_OBJECT
+JOIN FEATURED_IN
+ON ART_OBJECT.id_no = FEATURED_IN.art_id
+JOIN EXHIBITIONS
+ON FEATURED_IN.exhibition_id = EXHIBITIONS.e_id
+WHERE EXHIBITIONS.Name = 'Past and present';
+
+//Returns everything from art objects on display on March 11th
+SELECT * FROM ART_OBJECT
+JOIN FEATURED_IN
+ON ART_OBJECT.id_no = FEATURED_IN.art_id
+JOIN EXHIBITIONS
+ON FEATURED_IN.exhibition_id = EXHIBITIONS.e_id
+WHERE EXHIBITIONS.Start_day = 11 AND Start_month = 03;
+
+//Returns all statues by artist Michelangelo
+SELECT * FROM ART_OBJECT
+WHERE Type = 'Statue' AND Artist = 'Michelangelo';
+
+//Returns everything from art objects borrowed on the 5th
+SELECT * FROM ART_OBJECT
+JOIN BORROWED_FROM
+ON ART_OBJECT.id_no = BORROWED_FROM.art_id
+JOIN BORROWED
+ON BORROWED.coll_id = BORROWED_FROM.b_id
+WHERE BORROWED.Day_Borrowed = 05;
+
+//Returns epochs of artists from Norway
+SELECT Epoch FROM ARTIST
+WHERE Country_of_origin = "Norway";
+
+//REturns type of art objects in exhibitions that start in February
+SELECT Type FROM ART_OBJECT
+JOIN FEATURED_IN
+ON ART_OBJECT.id_no = FEATURED_IN.art_id
+JOIN EXHIBITIONS
+ON FEATURED_IN.exhibition_id = EXHIBITIONS.e_id
+WHERE EXHIBITIONS.Start_month = 02;
+
+
+//Returns Title of art made by artists from Norway
+SELECT Title FROM ART_OBJECT
+JOIN ARTIST 
+ON ART_OBJECT.artist = ARTIST.name
+WHERE ARTIST.Country_of_origin = 'Norway';
+
+//Returns titles of art objects with unknown artists
+SELECT Title FROM ART_OBJECT
+WHERE Artist = "Unknown";
+
+//Returns artist names whose art is featured in the Norway Collection
+SELECT Name FROM ARTIST
+JOIN CREATED_BY
+ON CREATED_BY.artist_name = ARTIST.Name
+JOIN BORROWED_FROM 
+ON BORROWED_FROM.art_id = CREATED_BY.art_id
+JOIN BORROWED 
+ON BORROWED.coll_id = BORROWED_FROM.b_id
+WHERE BORROWED.Collection = 'Norway Collection';
+
+
+//Returns every art object from borrowed collections with id's higher than 2
+SELECT * FROM BORROWED
+WHERE coll_id < 2;
+
+//Returns all 2 meter tall statues
+SELECT * FROM ART_OBJECT
+WHERE Type = 'Statue' AND Height > 2;
+
+//Returns artists whose countries of origin are known
+SELECT * FROM ARTIST 
+WHERE Country_of_origin != 'Unknown';
+
